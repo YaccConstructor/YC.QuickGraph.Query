@@ -1,0 +1,25 @@
+type project
+title
+    YC.QuickGraph.Query
+owners
+    YaccConstructor
+authors 
+    YaccConstructor
+projectUrl
+    https://github.com/YaccConstructor/YC.QuickGraph.Query
+iconUrl
+    https://raw.githubusercontent.com/YaccConstructor/YC.QuickGraph.Query/master/docs/files/img/logo.png
+licenseUrl
+    https://github.com/YaccConstructor/YC.QuickGraph.Query/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    graph path quering context-free subgraph grammar QuickGraph .NET YC
+summary
+    Path query engine for QuickGraph
+description
+    Path query engine for QuickGraph library. This library contains the set of extensions which allow you to use context-free constraints for path quering.
+
+
