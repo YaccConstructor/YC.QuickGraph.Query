@@ -10,7 +10,7 @@ Build status:
 
 | Branch | .NET | Mono |
 |--------|------|------|
-| Master | [![Master build status](https://ci.appveyor.com/api/projects/status/s8myouu45sunv2xh/branch/master?svg=true)](https://ci.appveyor.com/project/gsvgit/yaccconstructor/branch/master)| |
+| Master | [![Master build status](https://ci.appveyor.com/api/projects/status/8pcnmbuuow29h7xi/branch/master?svg=true)](https://ci.appveyor.com/project/gsvgit/yc-quickgraph-query/branch/master)| |
 
 
 Develop
