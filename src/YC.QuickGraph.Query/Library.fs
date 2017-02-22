@@ -1,16 +1,14 @@
 namespace YC.QuickGraph.Query
 
-/// Documentation for my library
-///
-/// ## Example
-///
-///     let h = Library.hello 1
-///     printfn "%d" h
-///
-module Library = 
-  
-  /// Returns 42
-  ///
-  /// ## Parameters
-  ///  - `num` - whatever
-  let hello num = 42
+open QuickGraph
+open Yard.Generators.GLL
+open Yard.Frontends.YardFrontend
+open Yard.Core.IL
+
+module Library =
+
+    let grammarToIL grammar = 
+        let frontend = YardFrontend()
+        frontend.ParseGrammar grammar
+
+    
