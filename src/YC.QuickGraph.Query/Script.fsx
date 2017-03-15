@@ -3,6 +3,3 @@
 
 #load "Library.fs"
 open YC.QuickGraph.Query
-
-let num = Library.hello 42
-printfn "%i" num
