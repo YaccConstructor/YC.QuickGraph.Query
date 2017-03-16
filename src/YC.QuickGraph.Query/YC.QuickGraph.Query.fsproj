@@ -66,7 +66,7 @@
     <None Include="paket.template" />
     <Content Include="App.config" />
     <Content Include="packages.config" />
-    <Compile Include="GraphImpl.fs" />
+    <Compile Include="ParserInputGraph.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Argu">
@@ -173,6 +173,9 @@
       <HintPath>..\..\packages\YC.QuickGraph.3.7.3\lib\net45\YC.QuickGraph.Petri.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="YC.QuickGraph.Query">
+      <HintPath>bin\Debug\YC.QuickGraph.Query.dll</HintPath>
+    </Reference>
     <Reference Include="YC.QuickGraphFS">
       <HintPath>..\..\packages\YC.QuickGraph.3.7.3\lib\net45\YC.QuickGraphFS.dll</HintPath>
       <Private>True</Private>
@@ -200,6 +203,9 @@
     <Reference Include="YC.Utils.SourceText">
       <HintPath>..\..\packages\YC.Utils.SourceText.0.3.0.1\lib\net45\YC.Utils.SourceText.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="YC.YaccConstructor">
+      <HintPath>..\..\packages\YC.SDK.0.2.0.0-alpha1\tools\YC.YaccConstructor.exe</HintPath>
     </Reference>
     <Reference Include="YC.YardFrontend">
       <HintPath>..\..\packages\YC.SDK.Runtime.0.2.0.0-alpha1\lib\net45\YC.YardFrontend.dll</HintPath>
