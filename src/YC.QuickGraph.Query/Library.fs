@@ -6,7 +6,7 @@ open Yard.Generators
 open YC.FST.AbstractLexing
 open YaccConstructor.API
 open Yard.Generators.GLL.ParserCommon
-open YC.QuickGraph.Query.GraphsRealisations
+open YC.QuickGraph.Query.GraphsImpl
 
 module Library =
     

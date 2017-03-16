@@ -4,7 +4,7 @@ open AbstractAnalysis.Common
 open QuickGraph
 open System.Runtime.CompilerServices
 
-module GraphsRealisations =
+module GraphsImpl =
 
     type LexerEdge<'l ,'br  when 'l: equality> (s,e,t) =
         inherit TaggedEdge<int,Option<'l*'br>>(s,e,t)
