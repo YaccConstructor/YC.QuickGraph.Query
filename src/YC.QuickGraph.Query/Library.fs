@@ -16,13 +16,14 @@ module Library =
     let getInputGraph pathToFile (edgeObjectToString : 'EdgeObject -> string) =
         new ParserInputGraph<'EdgeObject>(3, edgeObjectToString)
 
-    let parso parserSource input = 
+    let parse parserSource input = 
         AbstractParser.parse parserSource input true 
 
     let doSmth grammarFilePath graphPath (edgeObjectToString : 'EdgeObject -> string)= 
         let parser = getParserSource grammarFilePath
-        let input =  getInputGraph graphPath edgeObjectToString
-        parso parser input
+        let input = getInputGraph graphPath edgeObjectToString
+        let gss = parse parser input
+        
 
     //let SPPFToSubgraph (sppf: SPPF) =
 

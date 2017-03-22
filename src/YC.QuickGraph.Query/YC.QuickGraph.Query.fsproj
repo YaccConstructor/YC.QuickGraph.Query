@@ -130,8 +130,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="YC.GLLAbstractParser">
-      <HintPath>..\..\packages\YC.SDK.Runtime.0.2.0.0-alpha1\lib\net45\YC.GLLAbstractParser.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\..\YaccConstructor\Bin\Release\v40\YC.GLLAbstractParser.dll</HintPath>
     </Reference>
     <Reference Include="YC.GLLGenerator">
       <HintPath>..\..\packages\YC.SDK.Runtime.0.2.0.0-alpha1\lib\net45\YC.GLLGenerator.dll</HintPath>
