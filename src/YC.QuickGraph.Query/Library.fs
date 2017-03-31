@@ -1,12 +1,9 @@
 namespace YC.QuickGraph.Query
 
-open QuickGraph
 open Yard.Generators.GLL
-open Yard.Generators
-open YC.FST.AbstractLexing
 open YaccConstructor.API
 open Yard.Generators.GLL.ParserCommon
-open YC.QuickGraph.Query.GraphsImpl
+open AbstractAnalysis.Common
 
 module Library =
     
@@ -18,7 +15,7 @@ module Library =
 
     let InitGraph (*adjList*) tagToToken =
         //Add graph creation after release
-        new ParserInputGraph<_>(3, tagToToken)
+        new SimpleGraphInput<_>(tagToToken)
 
     let Parse parserSource input = 
         AbstractParser.parse parserSource input true 
