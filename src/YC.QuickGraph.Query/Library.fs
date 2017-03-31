@@ -10,23 +10,27 @@ open YC.QuickGraph.Query.GraphsImpl
 
 module Library =
     
-    let getParserSource (grammarFilePath : string) = 
+    let PrepareGrammarFromFile grammarFilePath = 
         generate grammarFilePath "YardFrontend" "GllGenerator" None ["ExpandMeta"] [] :?> ParserSourceGLL
 
-    let getInputGraph pathToFile (edgeObjectToString : 'EdgeObject -> string) =
-        new ParserInputGraph<'EdgeObject>(3, edgeObjectToString)
+    //let PrepareGrammarFromString (grammarStr : string) = 
+    //Add after release
 
-    let parse parserSource input = 
+    let InitGraph (*adjList*) tagToToken =
+        //Add graph creation after release
+        new ParserInputGraph<_>(3, tagToToken)
+
+    let Parse parserSource input = 
         AbstractParser.parse parserSource input true 
 
-    let doSmth grammarFilePath graphPath (edgeObjectToString : 'EdgeObject -> string)= 
-        let parser = getParserSource grammarFilePath
-        let input = getInputGraph graphPath edgeObjectToString
-        let gss = parse parser input
+    let executeQuery grammarFilePath tagToToken = 
+        let parser = PrepareGrammarFromFile grammarFilePath
+        let input = InitGraph tagToToken
+        Parse parser input |> snd
         
-
-    //let SPPFToSubgraph (sppf: SPPF) =
-
+    
+    //let SPPFToSubgraph (sppf: YC.GLL.SPPF.SPPF) =
+    
     //let SPPFToCFRelation (sppf: SPPF) = 
 
     //let SPPFToPathSet (sppf: SPPF) = 
