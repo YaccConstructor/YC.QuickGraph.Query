@@ -17,7 +17,13 @@ module Library =
 
     AddinManager.Initialize()    
     AddinManager.Registry.Update(null)
-    
+
+    let frst (f, _, _) = f
+
+    let snd (_, s, _) = s
+
+    let trd (_, _, t) = t
+
     /// <summary> 
     /// Prepares grammar from .yrd file. 
     /// </summary>
@@ -63,6 +69,10 @@ module Library =
             graph.AddEdge e |> ignore
         graph
 
+    let IntToString (ps : ParserSourceGLL) (value : int<token>) = 
+        let _, s = ps.IntToString.TryGetValue (value |> int)
+        s
+
     /// <summary>
     /// Method for getting SPPF from ready GLLParserSource and prepared graph
     /// </summary>
@@ -72,16 +82,17 @@ module Library =
         let _, parseRes, _ = parse parserSource inputGraph true
         parseRes
         
-    let SPPFToShortestPath (sppf: SPPF) =
+    let SPPFToShortestPath (seq) =
         42
 
-    let SPPFToSubgraph (sppf: SPPF) =
+    let SPPFToSubgraph edges (graph : IVertexAndEdgeListGraph<_, _>) =
         42
 
-    let SPPFToPathSet (sppf: SPPF) =
-        42
+    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) =
+        GetTerminals sppf
+        |> Seq.map (fun x -> new TaggedEdge<int, string>(snd x, trd x, IntToString ps (frst x)))
 
-    let SPPFToCFRelation (sppf: SPPF) =
+    let SPPFToCFRelation (seq) =
         42
 
     /// <summary>
@@ -89,22 +100,19 @@ module Library =
     /// </summary>
     /// <param name="preparedGrammar">GLLParserSource</param>
     /// <param name="preparedGraph">Initialized graph</param>
-    let executeQuery grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString =
-        let parserSource = PrepareGrammarFromString grammar
+    let ExecuteQuery grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString =
+        let parserSource = PrepareGrammarFromFile grammar
         let simpleGraph = InitGraph graph tagToString parserSource
-        GetSPPF parserSource simpleGraph
+        SPPFToPathSet (GetSPPF parserSource simpleGraph) parserSource
 
     let GetShortestPath grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        executeQuery grammar graph tagToString |> SPPFToShortestPath
+        ExecuteQuery grammar graph tagToString |> SPPFToShortestPath
 
     let GetSubgraph grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        executeQuery grammar graph tagToString |> SPPFToSubgraph
+        SPPFToSubgraph (ExecuteQuery grammar graph tagToString) graph
 
     let GetCFRelation grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        executeQuery grammar graph tagToString |> SPPFToPathSet
-
-    let GetPathSet grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        executeQuery grammar graph tagToString |> SPPFToCFRelation
+        ExecuteQuery grammar graph tagToString |> SPPFToCFRelation
 
     let ExecOnMultipleGraphs (ps : ParserSourceGLL) (graphs : List<IVertexAndEdgeListGraph<_, _>>) (tagToString : _ -> string) =
         let convertedGraphsList = new List<SimpleInputGraph<_>>()

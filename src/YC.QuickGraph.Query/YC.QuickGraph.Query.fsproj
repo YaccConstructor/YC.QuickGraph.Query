@@ -78,6 +78,9 @@
     <Reference Include="System.Numerics">
       <Private>True</Private>
     </Reference>
+    <Reference Include="YC.GLLAbstractParser">
+      <HintPath>..\..\..\..\..\Desktop\mess\YC.GLLAbstractParser.dll</HintPath>
+    </Reference>
     <Reference Include="YC.YaccConstructor">
       <HintPath>..\..\..\..\..\Desktop\mess\YC.YaccConstructor.exe</HintPath>
       <Private>True</Private>
@@ -242,11 +245,6 @@
         </Reference>
         <Reference Include="YC.FsYaccFrontend">
           <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.FsYaccFrontend.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="YC.GLLAbstractParser">
-          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.GLLAbstractParser.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

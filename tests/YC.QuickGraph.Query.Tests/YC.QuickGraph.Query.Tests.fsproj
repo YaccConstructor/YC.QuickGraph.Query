@@ -83,6 +83,9 @@
       <Project>{3528ca82-4f2c-4624-942d-69b6e5652442}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <Reference Include="YC.GLLAbstractParser">
+      <HintPath>..\..\..\..\..\Desktop\mess\YC.GLLAbstractParser.dll</HintPath>
+    </Reference>
     <Reference Include="YC.YaccConstructor">
       <HintPath>..\..\..\..\..\Desktop\mess\YC.YaccConstructor.exe</HintPath>
       <Private>True</Private>
@@ -247,11 +250,6 @@
         </Reference>
         <Reference Include="YC.FsYaccFrontend">
           <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.FsYaccFrontend.dll</HintPath>
-          <Private>True</Private>
-          <Paket>True</Paket>
-        </Reference>
-        <Reference Include="YC.GLLAbstractParser">
-          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.GLLAbstractParser.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
