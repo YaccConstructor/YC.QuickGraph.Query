@@ -8,9 +8,6 @@ open Mono.Addins
 open YC.QuickGraph
 open YC.GLL.SPPF
 
-[<assembly:AddinRoot ("YaccConstructor", "1.0")>]
-    do()
-
 let test (grammar : string) = 
     let vertices = new ResizeArray<int>()
     vertices.Add(0)
@@ -18,11 +15,10 @@ let test (grammar : string) =
     vertices.Add(2)
     vertices.Add(3)
     let edges = new ResizeArray<ParserEdge<string>>()
-    edges.Add(new ParserEdge<string>(0, 3, "B"))
-    edges.Add(new ParserEdge<string>(3, 0, "B"))
     edges.Add(new ParserEdge<string>(0, 1, "A"))
-    edges.Add(new ParserEdge<string>(1, 2, "A"))
-    edges.Add(new ParserEdge<string>(2, 0, "A"))
+    edges.Add(new ParserEdge<string>(1, 0, "A"))
+    edges.Add(new ParserEdge<string>(1, 2, "B"))
+    edges.Add(new ParserEdge<string>(2, 1, "B"))
     let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
     for v in vertices do
         graph.AddVertex v |> ignore
@@ -37,7 +33,7 @@ type ``Library with simple grammar tests`` () =
         let str = "AnBn.yrd" (*"s: A B | A s B"*)
         let pathset = test str
         for n in pathset do
-            printfn "%s" (n.Source.ToString() + " -> " + n.Target.ToString() + " tag: " + n.Tag)
+            printfn "%A" n
         Assert.AreEqual(42, 42)
 
 [<EntryPoint>]

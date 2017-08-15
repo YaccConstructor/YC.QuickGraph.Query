@@ -1,9 +1,11 @@
 namespace YC.QuickGraph.Query
 
 open Yard.Generators.GLL
+open Yard.Generators.Common.ASTGLLFSA
 open Yard.Generators.GLL.ParserCommon
 open AbstractAnalysis.Common
-open YaccConstructor.API
+open Yard.Frontends.YardFrontend
+open YC.API
 open AbstractParser
 open Mono.Addins
 open QuickGraph
@@ -11,12 +13,6 @@ open System.Collections.Generic
 open YC.GLL.SPPF
 
 module Library = 
-    
-    [<assembly:AddinRoot ("YaccConstructor", "1.0")>]
-        do()
-
-    AddinManager.Initialize()    
-    AddinManager.Registry.Update(null)
 
     let frst (f, _, _) = f
 
@@ -24,20 +20,37 @@ module Library =
 
     let trd (_, _, t) = t
 
+    let FindNonTermByName name (ps : ParserSourceGLL) (sppf : SPPF) = 
+        sppf.Nodes.Find(fun x -> x :? NonTerminalNode)
+
     /// <summary> 
     /// Prepares grammar from .yrd file. 
     /// </summary>
     ///<param name = "grammarFile"> Path to a grammar file </param>
     let PrepareGrammarFromFile grammarFile = 
-        generate grammarFile "YardFrontend" "GLLGenerator" None ["ExpandMeta"] [] :?> ParserSourceGLL
+        let fe = new YardFrontend()
+        let gen = new GLL()
+        generate grammarFile fe gen None Seq.empty [||] [] :?> ParserSourceGLL
 
     /// <summary>
     /// Prepares grammar from string.
     /// </summary>
     /// <param name="grammar">Grammar string</param>
     let PrepareGrammarFromString grammar = 
-        GenerateFromStrToObj grammar "YardFrontend" "GLLGenerator" None ["ExpandMeta"] :?> ParserSourceGLL
+        let fe = new YardFrontend()
+        let gen = new GLL()
+        GenerateFromStrToObj grammar fe gen None Seq.empty [||] :?> ParserSourceGLL
+    
+    let PrepareGrammarWithConvFromString grammar conv = 
+        let fe = new YardFrontend()
+        let gen = new GLL()
+        GenerateFromStrToObj grammar fe gen None conv [||] :?> ParserSourceGLL
 
+    let PrepareGrammarWithGenParamsAndConversionsFromString grammar genParams conv = 
+        let fe = new YardFrontend()
+        let gen = new GLL()
+        GenerateFromStrToObj grammar fe gen genParams conv [||] :?> ParserSourceGLL 
+    
     /// <summary>
     /// Initializing SimpleInputGraph from IVertexAndEdgeListGraph subclasses
     /// </summary>
@@ -88,9 +101,10 @@ module Library =
     let SPPFToSubgraph edges (graph : IVertexAndEdgeListGraph<_, _>) =
         42
 
-    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) =
-        GetTerminals sppf
-        |> Seq.map (fun x -> new TaggedEdge<int, string>(snd x, trd x, IntToString ps (frst x)))
+    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) = 
+        let nt = sppf.Nodes.Find(fun x -> x :? NonTerminalNode) :?> NonTerminalNode
+        let s = sppf.Iterate nt
+        s
 
     let SPPFToCFRelation (seq) =
         42
@@ -105,14 +119,23 @@ module Library =
         let simpleGraph = InitGraph graph tagToString parserSource
         SPPFToPathSet (GetSPPF parserSource simpleGraph) parserSource
 
+    //let GetPathSet grammar(graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
+    
+
     let GetShortestPath grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
         ExecuteQuery grammar graph tagToString |> SPPFToShortestPath
 
     let GetSubgraph grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
         SPPFToSubgraph (ExecuteQuery grammar graph tagToString) graph
 
-    let GetCFRelation grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
+    let GetCFRelations grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
         ExecuteQuery grammar graph tagToString |> SPPFToCFRelation
+
+    (*let GetCFRelation grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString nonTermName = 
+       let parserSource = PrepareGrammarFromFile grammar
+       let sppf = ExecuteQuery grammar graph tagToString
+       let nonTerm = FindNonTermByName nonTermName parserSource sppf
+       sppf*)
 
     let ExecOnMultipleGraphs (ps : ParserSourceGLL) (graphs : List<IVertexAndEdgeListGraph<_, _>>) (tagToString : _ -> string) =
         let convertedGraphsList = new List<SimpleInputGraph<_>>()
