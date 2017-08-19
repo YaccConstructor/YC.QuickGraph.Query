@@ -69,12 +69,6 @@
     <Reference Include="mscorlib">
       <Private>True</Private>
     </Reference>
-    <Reference Include="System">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Core">
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Numerics">
       <Private>True</Private>
     </Reference>
@@ -83,13 +77,6 @@
       <Project>{3528ca82-4f2c-4624-942d-69b6e5652442}</Project>
       <Private>True</Private>
     </ProjectReference>
-    <Reference Include="YC.GLLAbstractParser">
-      <HintPath>..\..\..\..\..\Desktop\mess\YC.GLLAbstractParser.dll</HintPath>
-    </Reference>
-    <Reference Include="YC.YaccConstructor">
-      <HintPath>..\..\..\..\..\Desktop\mess\YC.YaccConstructor.exe</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <Import Project="..\..\.paket\paket.targets" />
   <Choose>
@@ -150,8 +137,17 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.1' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.5.3' Or $(TargetFrameworkVersion) == 'v4.6' Or $(TargetFrameworkVersion) == 'v4.6.1' Or $(TargetFrameworkVersion) == 'v4.6.2' Or $(TargetFrameworkVersion) == 'v4.6.3' Or $(TargetFrameworkVersion) == 'v4.7')">
       <ItemGroup>
+        <Reference Include="System">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Core">
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="System.Xml">
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="Mono.Addins">
-          <HintPath>..\..\packages\Mono.Addins\lib\net40\Mono.Addins.dll</HintPath>
+          <HintPath>..\..\packages\Mono.Addins\lib\net45\Mono.Addins.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -253,6 +249,11 @@
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
+        <Reference Include="YC.GLLAbstractParser">
+          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.GLLAbstractParser.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
         <Reference Include="YC.GLLGenerator">
           <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.GLLGenerator.dll</HintPath>
           <Private>True</Private>
@@ -265,6 +266,16 @@
         </Reference>
         <Reference Include="YC.Parser.Common">
           <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.Parser.Common.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="YC.RIGLRCommon">
+          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.RIGLRCommon.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="YC.RIGLRParser">
+          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.RIGLRParser.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
@@ -290,6 +301,11 @@
         </Reference>
         <Reference Include="YC.TreeDump">
           <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.TreeDump.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+        <Reference Include="YC.YaccConstructor">
+          <HintPath>..\..\packages\YC.SDK.Runtime\lib\net45\YC.YaccConstructor.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
