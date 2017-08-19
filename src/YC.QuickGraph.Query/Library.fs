@@ -41,16 +41,6 @@ module Library =
         let gen = new GLL()
         GenerateFromStrToObj grammar fe gen None Seq.empty [||] :?> ParserSourceGLL
     
-    let PrepareGrammarWithConvFromString grammar conv = 
-        let fe = new YardFrontend()
-        let gen = new GLL()
-        GenerateFromStrToObj grammar fe gen None conv [||] :?> ParserSourceGLL
-
-    let PrepareGrammarWithGenParamsAndConversionsFromString grammar genParams conv = 
-        let fe = new YardFrontend()
-        let gen = new GLL()
-        GenerateFromStrToObj grammar fe gen genParams conv [||] :?> ParserSourceGLL 
-    
     /// <summary>
     /// Initializing SimpleInputGraph from IVertexAndEdgeListGraph subclasses
     /// </summary>
@@ -60,10 +50,7 @@ module Library =
     let InitGraph (graph : IVertexAndEdgeListGraph<_, _>) (edgeTagToString : _ -> string) (parserSource : ParserSourceGLL) = 
         let edgeTagToInt x = edgeTagToString x |> parserSource.StringToToken |> int
         let simpleGraph = new SimpleInputGraph<_>(graph.VertexCount, edgeTagToInt)
-        for v in graph.Vertices do
-            simpleGraph.AddVertex v |> ignore
-        for e in graph.Edges do
-            simpleGraph.AddEdge e |> ignore
+        simpleGraph.AddVerticesAndEdgeRange graph.Edges |> ignore
         simpleGraph
 
     /// <summary>
@@ -73,18 +60,18 @@ module Library =
     /// <param name="vertices">List of vertices in your graph</param>
     /// <param name="parserSource"> Parser source </param>
     /// <param namr="tagToStr"> Function from edge object to string</param>
-    let InitFromLists (edges : List<_>) (vertices : List<_>) (parserSource : ParserSourceGLL) tagToStr = 
-        let tagToToken x = tagToStr x |> parserSource.StringToToken |> int
+    let InitFromLists (edges : List<_>) (vertices : List<_>) (parserSource : ParserSourceGLL) edgeTagToString = 
+        let tagToToken x = edgeTagToString x |> parserSource.StringToToken |> int
         let graph = new SimpleInputGraph<_>(vertices.Count, tagToToken)
-        for v in vertices do
-            graph.AddVertex v |> ignore
-        for e in edges do
-            graph.AddEdge e |> ignore
-        graph
+        graph.AddVerticesAndEdgeRange edges
 
     let IntToString (ps : ParserSourceGLL) (value : int<token>) = 
         let _, s = ps.IntToString.TryGetValue (value |> int)
         s
+
+
+    let GetNonTerminalByName name (sppf : SPPF) ps =
+        sppf.GetNonTermByName name ps
 
     /// <summary>
     /// Method for getting SPPF from ready GLLParserSource and prepared graph
@@ -101,10 +88,8 @@ module Library =
     let SPPFToSubgraph edges (graph : IVertexAndEdgeListGraph<_, _>) =
         42
 
-    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) = 
-        let nt = sppf.Nodes.Find(fun x -> x :? NonTerminalNode) :?> NonTerminalNode
-        let s = sppf.Iterate nt
-        s
+    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) length nonTermName =
+        sppf.Iterate (GetNonTerminalByName nonTermName sppf ps) length
 
     let SPPFToCFRelation (seq) =
         42
