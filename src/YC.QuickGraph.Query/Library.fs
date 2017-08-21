@@ -14,14 +14,11 @@ open YC.GLL.SPPF
 
 module Library = 
 
-    let frst (f, _, _) = f
+    let fst (f, _, _) = f
 
     let snd (_, s, _) = s
 
     let trd (_, _, t) = t
-
-    let FindNonTermByName name (ps : ParserSourceGLL) (sppf : SPPF) = 
-        sppf.Nodes.Find(fun x -> x :? NonTerminalNode)
 
     /// <summary> 
     /// Prepares grammar from .yrd file. 
@@ -82,17 +79,24 @@ module Library =
         let _, parseRes, _ = parse parserSource inputGraph true
         parseRes
         
-    let SPPFToShortestPath (seq) =
-        42
+    let SPPFToShortestPath (sppf : SPPF) (ps : ParserSourceGLL) startVert endVert nonTermName length =
+        sppf.Iterate (GetNonTerminalByName nonTermName sppf ps) ps length
 
-    let SPPFToSubgraph edges (graph : IVertexAndEdgeListGraph<_, _>) =
-        42
+    let SPPFToSubgraph (sppf : SPPF) (ps : ParserSourceGLL) edges (graph : IVertexAndEdgeListGraph<_, _>) (stringToLabel) =
+        let tagToLabel x = ps.IntToString.Item (x |> int) |> stringToLabel
+        let edges = GetTerminals sppf |> Seq.map(fun x -> new ParserEdge<_>(snd x, trd x, (fst x |> tagToLabel)))
+        let subgraph = new AdjacencyGraph<int, ParserEdge<_>>()
+        subgraph.AddVerticesAndEdgeRange(edges) |> ignore
+        subgraph
 
-    let SPPFToPathSet (sppf: SPPF) (ps : ParserSourceGLL) length nonTermName =
+    let SPPFToPathSet (sppf : SPPF) (ps : ParserSourceGLL) length nonTermName =
         sppf.Iterate (GetNonTerminalByName nonTermName sppf ps) length
 
-    let SPPFToCFRelation (seq) =
-        42
+    let SPPFToCFRelation (sppf : SPPF) nonTermName length ps = 
+        let seq = sppf.Iterate (GetNonTerminalByName nonTermName sppf ps) ps length
+        let first = seq |> Seq.item 0
+        let last = seq |> Seq.last
+        (nonTermName, first, last)
 
     /// <summary>
     /// Executes the query and returns SPPF
@@ -103,18 +107,6 @@ module Library =
         let parserSource = PrepareGrammarFromFile grammar
         let simpleGraph = InitGraph graph tagToString parserSource
         SPPFToPathSet (GetSPPF parserSource simpleGraph) parserSource
-
-    //let GetPathSet grammar(graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-    
-
-    let GetShortestPath grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        ExecuteQuery grammar graph tagToString |> SPPFToShortestPath
-
-    let GetSubgraph grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        SPPFToSubgraph (ExecuteQuery grammar graph tagToString) graph
-
-    let GetCFRelations grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
-        ExecuteQuery grammar graph tagToString |> SPPFToCFRelation
 
     (*let GetCFRelation grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString nonTermName = 
        let parserSource = PrepareGrammarFromFile grammar
