@@ -14,6 +14,7 @@ open YC.GLL.SPPF
 
 module Library = 
 
+    // Just helper functions
     let fst (f, _, _) = f
 
     let snd (_, s, _) = s
@@ -39,7 +40,7 @@ module Library =
         GenerateFromStrToObj grammar fe gen None Seq.empty [||] :?> ParserSourceGLL
     
     /// <summary>
-    /// Initializing SimpleInputGraph from IVertexAndEdgeListGraph subclasses
+    /// Initializing SimpleInputGraph from IVertexAndEdgeListGraph subclasses instances
     /// </summary>
     /// <param name="edgesList">List of edges in your graph</param>
     /// <param name="edgeTagToString">Function which casts edge object to string</param>
@@ -62,23 +63,43 @@ module Library =
         let graph = new SimpleInputGraph<_>(vertices.Count, tagToToken)
         graph.AddVerticesAndEdgeRange edges
 
+    /// <summary>
+    /// Casts tokenized terminal name to it's original name
+    /// </summary>
+    /// <param name="ps">ParserSourceGLL</param>
+    /// <param name="value">terminal tokenized name</param>
     let IntToString (ps : ParserSourceGLL) (value : int<token>) = 
         let _, s = ps.IntToString.TryGetValue (value |> int)
         s
 
     /// <summary>
-    /// Method for getting SPPF from ready GLLParserSource and prepared graph
+    /// Constructs SPPF from grammar, graph and tokenize function. Returns SPPF and ParserSourceGLL
     /// </summary>
-    /// <param name="parserSource">GLLParserSource</param>
-    /// <param name="inputGraph">Initialized graph</param>
+    /// <param name="grammar">Path to grammar file</param>
+    /// <param name="graph">Any subclass of IVertexAndEdgeListGraph</param>
+    /// <param name="tagToString">Tokenization function</param>
     let GetSPPF grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
         let parserSource = PrepareGrammarFromFile grammar
         let simpleGraph = InitGraph graph tagToString parserSource
         parse parserSource simpleGraph true |> snd, parserSource
         
+    /// <summary>
+    /// Returns shortest path between two vertices
+    /// </summary>
+    /// <param name="sppf">SPPF for iterating over it</param>
+    /// <param name="ps">ParserSourceGLL</param>
+    /// <param name="startVert">Initial vertice</param>
+    /// <param name="endVert">Finish vertice</param>
+    /// <param name="nonTermName">Name of nonterminal for starting iteration from it</param>
+    /// <param name="length">Should be remove on next release</param>
     let SPPFToShortestPath (sppf : SPPF) (ps : ParserSourceGLL) startVert endVert nonTermName length =
         sppf.Iterate (sppf.GetNonTermByName nonTermName ps) ps length
 
+    /// <summary>
+    /// Returns subgraph constructed from terminal nodes of SPPF
+    /// </summary>
+    /// <param name="sppf">SPPF</param>
+    /// <param name="ps">ParserSourceGLL</param>
     let SPPFToSubgraph (sppf : SPPF) (ps : ParserSourceGLL) =
         let tagToLabel x = ps.IntToString.Item (x |> int)
         let edges = GetTerminals sppf |> Seq.map(fun x -> new ParserEdge<_>(snd x, trd x, (fst x |> tagToLabel)))
@@ -86,15 +107,37 @@ module Library =
         subgraph.AddVerticesAndEdgeRange(edges) |> ignore
         subgraph
 
+    /// <summary>
+    /// Returns a set of paths with presetted length
+    /// </summary>
+    /// <param name="sppf">SPPF</param>
+    /// <param name="ps">ParserSourceGLL</param>
+    /// <param name="length">Size of returned set</param>
+    /// <param name="nonTermName">Name of nonterminal for starting iteration from it</param>
     let SPPFToPathSet (sppf : SPPF) (ps : ParserSourceGLL) length nonTermName =
         sppf.Iterate (sppf.GetNonTermByName nonTermName ps) ps length
 
+    /// <summary>
+    /// Returns a context-free-relations triplets, where the first element is nonterminal, second is initial vertice and third is finish vertice
+    /// </summary>
+    /// <param name="sppf">SPPF</param>
+    /// <param name="nonTermName">Name of nonterminal for starting iteration from it</param>
+    /// <param name="length">Should be remove on next release</param>
+    /// <param name="ps">ParserSourceGLL</param>
     let SPPFToCFRelation (sppf : SPPF) nonTermName length ps = 
         let seq = sppf.Iterate (sppf.GetNonTermByName nonTermName ps) ps length
         let first = seq |> Seq.item 0
         let last = seq |> Seq.last
         (nonTermName, first, last)
 
+    /// <summary>
+    /// Executes query with specified grammar on given graph. Returns a pathset with presetted length
+    /// </summary>
+    /// <param name="grammar">Path to grammar file</param>
+    /// <param name="graph">Any subclass of IVertexAndEdgeListGraph</param>
+    /// <param name="tagToString">Tokenization function</param>
+    /// <param name="length">Returned path length</param>
+    /// <param name="nonTermName">Name of nonterminal for starting iteration from it</param>
     let ExecuteQuery grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString length nonTermName=
         let sppf, ps = GetSPPF grammar graph tagToString
         SPPFToPathSet sppf ps length nonTermName
@@ -105,6 +148,12 @@ module Library =
        let nonTerm = FindNonTermByName nonTermName parserSource sppf
        sppf*)
 
+    /// <summary>
+    /// Allows to execute prepared query on multiple graphs. Return seq of path sets
+    /// </summary>
+    /// <param name="ps">ParserSourceGLL</param>
+    /// <param name="graphs">List of graphs</param>
+    /// <param name="tagToString">Tokenization function</param>
     let ExecOnMultipleGraphs (ps : ParserSourceGLL) (graphs : List<IVertexAndEdgeListGraph<_, _>>) (tagToString : _ -> string) =
         let convertedGraphsList = new List<SimpleInputGraph<_>>()
         graphs |> Seq.map (fun x -> convertedGraphsList.Add(InitGraph x tagToString ps)) |> ignore
@@ -112,10 +161,23 @@ module Library =
         //convertedGraphsList |> Seq.map (fun x -> sppfList.Add(GetSPPF ps x |> fst)) |> ignore
         sppfList
 
+    /// <summary>
+    /// Returns subgraph of given graph.
+    /// </summary>
+    /// <param name="grammar">Path to grammar file</param>
+    /// <param name="graph">Any subclass of IVertexAndEdgeListGraph</param>
+    /// <param name="tagToString">Tokenization function</param>
     let GetSubgraph grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString = 
         let sppf, ps = GetSPPF grammar graph tagToString
         SPPFToSubgraph sppf ps
         
+    /// <summary>
+    /// Returns context-free relation for given graph and grammar.
+    /// </summary>
+    /// <param name="grammar">Path to grammar file</param>
+    /// <param name="graph">Any subclass of IVertexAndEdgeListGraph</param>
+    /// <param name="tagToString">Tokenization function</param>
+    /// <param name="nontermName">Name of nonterminal for starting iteration from it</param>
     let GetCFRelation grammar (graph : IVertexAndEdgeListGraph<_, _>) tagToString nontermName = 
         let sppf, ps = GetSPPF grammar graph tagToString
         SPPFToCFRelation sppf nontermName 100 ps
