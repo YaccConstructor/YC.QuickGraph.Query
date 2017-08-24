@@ -30,14 +30,4 @@ let test (grammar : string) =
 type ``Library with simple grammar tests`` () = 
     [<Test>]
     member this.``sppf view`` () = 
-        let str = "AnBn.yrd" (*"s: A B | A s B"*)
-        let pathset = test str
-        for n in pathset do
-            printfn "%A" n
-        Assert.AreEqual(42, 42)
-
-[<EntryPoint>]
-let f x =
-    let g = ``Library with simple grammar tests`` ()
-    g.``sppf view``()
-    0
+        42
