@@ -5,10 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("YC.QuickGraph.Query")>]
 [<assembly: AssemblyProductAttribute("YC.QuickGraph.Query")>]
 [<assembly: AssemblyDescriptionAttribute("Path query engine for QuickGraph")>]
-[<assembly: AssemblyVersionAttribute("1.0")>]
-[<assembly: AssemblyFileVersionAttribute("1.0")>]
+[<assembly: AssemblyVersionAttribute("0.0.1")>]
+[<assembly: AssemblyFileVersionAttribute("0.0.1")>]
 do ()
 
 module internal AssemblyVersionInformation =
-    let [<Literal>] Version = "1.0"
-    let [<Literal>] InformationalVersion = "1.0"
+    let [<Literal>] AssemblyTitle = "YC.QuickGraph.Query"
+    let [<Literal>] AssemblyProduct = "YC.QuickGraph.Query"
+    let [<Literal>] AssemblyDescription = "Path query engine for QuickGraph"
+    let [<Literal>] AssemblyVersion = "0.0.1"
+    let [<Literal>] AssemblyFileVersion = "0.0.1"
