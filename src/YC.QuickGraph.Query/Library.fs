@@ -7,7 +7,6 @@ open AbstractAnalysis.Common
 open Yard.Frontends.YardFrontend
 open YC.API
 open AbstractParser
-open Mono.Addins
 open QuickGraph
 open System.Collections.Generic
 open YC.GLL.SPPF
