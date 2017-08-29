@@ -69,4 +69,4 @@ let getParserSource grammarFile conv =
 type ``Library with simple grammar tests`` () = 
     [<Test>]
     member this.``sppf view`` () = 
-        Assert.Pass
+        Assert.AreEqual(42, 42)
