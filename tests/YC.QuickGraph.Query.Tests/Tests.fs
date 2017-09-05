@@ -4,7 +4,6 @@ open NUnit.Framework
 open AbstractAnalysis.Common
 open YC.QuickGraph.Query.Library
 open System
-open Mono.Addins
 open YC.QuickGraph
 open YC.GLL.SPPF
 open QuickGraph
@@ -15,45 +14,20 @@ open Yard.Frontends.YardFrontend
 open YC.API
 open System.IO
 
-let test (grammar : string) = 
-    let vertices = new ResizeArray<int>()
-    vertices.Add(0)
-    vertices.Add(1)
-    vertices.Add(2)
-    vertices.Add(3)
-    let edges = new ResizeArray<ParserEdge<string>>()
-    edges.Add(new ParserEdge<string>(0, 1, "A"))
-    edges.Add(new ParserEdge<string>(1, 0, "A"))
-    edges.Add(new ParserEdge<string>(1, 2, "B"))
-    edges.Add(new ParserEdge<string>(2, 1, "B"))
-    let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
-    for v in vertices do
-        graph.AddVertex v |> ignore
-    for e in edges do
-        graph.AddEdge e |> ignore
-    ExecuteQuery grammar graph id
-
-let getInputGraph tokenizer inputFile =    
+let getInputGraph inputFile =    
     let edges = 
         File.ReadAllLines (inputFile)
         |> Array.filter(fun x -> not (x = ""))
         |> Array.map (fun s -> let x = s.Split([|' '|])
                                (int x.[0]), (int x.[1]), x.[2])
-    let edg (f : int) (t : string) (l : int) = 
-        new ParserEdge<_>(f, l, tokenizer (t.ToUpper()) |> int) 
-      
-    let g = new SimpleInputGraph<_>([|0<positionInInput>|], id)
     
-    [|for (first,last,tag) in edges -> edg first tag last |]
-    |> g.AddVerticesAndEdgeRange
-    |> ignore
-    g 
+    let edg (f : int) (t : string) (l : int) = 
+        new ParserEdge<_>(f, l, t) 
 
-let initGraph (graph : IVertexAndEdgeListGraph<_, _>) (edgeTagToString : _ -> string) (parserSource : ParserSourceGLL) = 
-        let edgeTagToInt x = edgeTagToString x |> parserSource.StringToToken |> int
-        let simpleGraph = new SimpleInputGraph<_>(graph.VertexCount, edgeTagToInt)
-        simpleGraph.AddVerticesAndEdgeRange(graph.Edges) |> ignore
-        simpleGraph
+    let g = new AdjacencyGraph<_, _>()
+    [|for (first,last,tag) in edges -> edg first tag last |]
+    |> g.AddVerticesAndEdgeRange |> ignore
+    g
 
 let getParserSource grammarFile conv = 
     let fe = new YardFrontend()
@@ -63,10 +37,35 @@ let getParserSource grammarFile conv =
              None
              conv
              [|""|]
-             [] :?> ParserSourceGLL
+             [] :?> ParserSourceGLL 
+
+let checkLength grammarFile graphFile tokenize pathLength ntName expectedLength = 
+    let graph = getInputGraph graphFile
+    let pathSet = Library.ExecuteQuery grammarFile graph tokenize pathLength ntName
+    Assert.AreEqual(Seq.length pathSet, expectedLength)
+
+let checkPaths grammarFile graphFile tokenize pathLength ntName expectedPath = 
+    let graph = getInputGraph graphFile
+    let pathSet = Library.ExecuteQuery grammarFile graph tokenize pathLength ntName
+    Assert.AreEqual(pathSet, pathLength)
+
+let checkSubgraphSize grammarFile graphFile tokenize expectedSize = 
+    let graph = getInputGraph graphFile
+    let subgraph = Library.GetSubgraph grammarFile graph tokenize
+    Assert.AreEqual(subgraph.VertexCount, expectedSize)
+
+let checkCFRelation grammarFile graphFile tokenize ntName expectedCFR = 
+    let graph = getInputGraph graphFile
+    let cfr = Library.GetCFRelation grammarFile graph tokenize ntName
+    Assert.AreEqual(cfr, expectedCFR) 
+
+let checkShortestPathLength grammarFile graphFile tokenize ntName startVertice endVertice expectedLength = 
+    let graph = getInputGraph graphFile
+    let shortest = Library.GetShortestPath grammarFile graph tokenize ntName startVertice endVertice
+    Assert.AreEqual(Seq.length shortest, expectedLength)
 
 [<TestFixture>]
 type ``Library with simple grammar tests`` () = 
     [<Test>]
-    member this.``sppf view`` () = 
-        Assert.AreEqual(42, 42)
+    member this.``pathset test`` () = 
+        "..."
