@@ -16,6 +16,8 @@ open YC.GLL
 open System.IO
 open YC.QuickGraph.Query.BioData
 
+let filesDir = @"../../"
+
 let getInputGraph inputFile =    
     let edges = 
         File.ReadAllLines (inputFile)
@@ -42,7 +44,7 @@ let getParserSource grammarFile conv =
              [] :?> ParserSourceGLL 
 
 let checkLength grammarFile graph tokenize pathLength ntName expectedLength = 
-    let pathSet = Library.ExecuteQuery grammarFile graph tokenize pathLength ntName
+    let pathSet = Library.ExecuteQuery (filesDir + grammarFile) graph tokenize pathLength ntName
     Assert.AreEqual(Seq.length pathSet, expectedLength)
 
 let checkPaths grammarFile graphFile tokenize pathLength ntName expectedPath = 
@@ -50,9 +52,10 @@ let checkPaths grammarFile graphFile tokenize pathLength ntName expectedPath =
     let pathSet = Library.ExecuteQuery grammarFile graph tokenize pathLength ntName
     Assert.AreEqual(pathSet, pathLength)
 
-let checkSubgraphSize grammarFile graphFile tokenize expectedSize = 
-    let graph = getInputGraph graphFile
-    let subgraph = Library.GetSubgraph grammarFile graph tokenize
+let checkSubgraphSize grammarFile graph tokenize expectedSize = 
+    let subgraph = Library.GetSubgraph (filesDir + grammarFile) graph tokenize
+    for x in subgraph.Edges do
+        printfn "%s" (x.ToString())
     Assert.AreEqual(subgraph.VertexCount, expectedSize)
 
 let checkCFRelation grammarFile graphFile tokenize ntName expectedCFR = 
@@ -67,12 +70,9 @@ let checkShortestPathLength grammarFile graphFile tokenize ntName startVertice e
 
 [<TestFixture>]
 type ``Library with simple grammar tests`` () = 
-    [<Test>]
-    member this.``pathset test`` () = 
-        checkSubgraphSize "KirillsGrammar1.yrd" "KirillsGraph1.txt" id 100000
 
     [<Test>]
-    member this._01_SimpleSPPFTest() = 
+    member this._00_SimpleBracketsTest() = 
         let vertices = new ResizeArray<int>()
         vertices.Add(0)
         vertices.Add(1)
@@ -88,7 +88,7 @@ type ``Library with simple grammar tests`` () =
         
 
     [<Test>]
-    member this._02_SimpleEpsCycleSPPFTest() =
+    member this._01_SimpleEpsCycleTest() =
         let vertices = [|0; 1; 2; 3; 4; 5|]
         let edges = new ResizeArray<ParserEdge<string>>()
         edges.Add(new ParserEdge<string>(0, 1, "A"))
@@ -99,3 +99,31 @@ type ``Library with simple grammar tests`` () =
         let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
         graph.AddVerticesAndEdgeRange edges |> ignore
         checkLength "EpsCycle.yrd" graph id 5 "a" 5
+
+    [<Test>]
+    member this._02_SimpleSubgraphTest() = 
+        let vertices = new ResizeArray<int>()
+        vertices.Add(0)
+        vertices.Add(1)
+        vertices.Add(2)
+        let edges = new ResizeArray<ParserEdge<string>>()
+        edges.Add(new ParserEdge<string>(0, 1, "A"))
+        edges.Add(new ParserEdge<string>(1, 0, "A"))
+        edges.Add(new ParserEdge<string>(1, 2, "B"))
+        edges.Add(new ParserEdge<string>(2, 1, "B"))
+        let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
+        graph.AddVerticesAndEdgeRange edges |> ignore
+        checkSubgraphSize "MyBrackets.yrd" graph id 3
+
+    [<Test>]
+    member this._03_SimpleEpsCycleTest() =
+        let vertices = [|0; 1; 2; 3; 4; 5|]
+        let edges = new ResizeArray<ParserEdge<string>>()
+        edges.Add(new ParserEdge<string>(0, 1, "A"))
+        edges.Add(new ParserEdge<string>(1, 2, "A"))
+        edges.Add(new ParserEdge<string>(2, 3, "A"))
+        edges.Add(new ParserEdge<string>(3, 4, "C"))
+        edges.Add(new ParserEdge<string>(4, 5, "C"))
+        let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
+        graph.AddVerticesAndEdgeRange edges |> ignore
+        checkSubgraphSize "EpsCycle.yrd" graph id 6
