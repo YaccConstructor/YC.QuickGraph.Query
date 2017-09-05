@@ -92,8 +92,7 @@ module Library =
     /// <param name="nonTermName">Name of nonterminal for starting iteration from it</param>
     /// <param name="length">Should be remove on next release</param>
     let private SPPFToShortestPath (sppf : SPPF) (ps : ParserSourceGLL) startVert endVert nonTermName =
-        let pathSet = sppf.Iterate (sppf.GetNonTermByName nonTermName ps) ps 0
-        Seq.
+        sppf.Iterate (sppf.GetNonTermByName nonTermName ps) ps 0
 
     /// <summary>
     /// Returns subgraph constructed from terminal nodes of SPPF

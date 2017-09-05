@@ -134,12 +134,15 @@
       <ItemGroup>
         <Reference Include="System">
           <Paket>True</Paket>
+          <Private>True</Private>
         </Reference>
         <Reference Include="System.Core">
           <Paket>True</Paket>
+          <Private>True</Private>
         </Reference>
         <Reference Include="System.Xml">
           <Paket>True</Paket>
+          <Private>True</Private>
         </Reference>
         <Reference Include="Mono.Addins">
           <HintPath>..\..\packages\Mono.Addins\lib\net45\Mono.Addins.dll</HintPath>

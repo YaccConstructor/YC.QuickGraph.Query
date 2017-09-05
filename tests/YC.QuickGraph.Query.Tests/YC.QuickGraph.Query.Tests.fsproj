@@ -61,6 +61,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="BioData.fs" />
     <Compile Include="Tests.fs" />
     <None Include="paket.references" />
     <Content Include="App.config" />
@@ -139,17 +140,15 @@
       <ItemGroup>
         <Reference Include="System">
           <Paket>True</Paket>
+          <Private>True</Private>
         </Reference>
         <Reference Include="System.Core">
           <Paket>True</Paket>
+          <Private>True</Private>
         </Reference>
         <Reference Include="System.Xml">
           <Paket>True</Paket>
-        </Reference>
-        <Reference Include="Mono.Addins">
-          <HintPath>..\..\packages\Mono.Addins\lib\net45\Mono.Addins.dll</HintPath>
           <Private>True</Private>
-          <Paket>True</Paket>
         </Reference>
       </ItemGroup>
     </When>

@@ -12,7 +12,9 @@ open AbstractParser
 open Yard.Generators.GLL.ParserCommon
 open Yard.Frontends.YardFrontend
 open YC.API
+open YC.GLL
 open System.IO
+open YC.QuickGraph.Query.BioData
 
 let getInputGraph inputFile =    
     let edges = 
@@ -39,8 +41,7 @@ let getParserSource grammarFile conv =
              [|""|]
              [] :?> ParserSourceGLL 
 
-let checkLength grammarFile graphFile tokenize pathLength ntName expectedLength = 
-    let graph = getInputGraph graphFile
+let checkLength grammarFile graph tokenize pathLength ntName expectedLength = 
     let pathSet = Library.ExecuteQuery grammarFile graph tokenize pathLength ntName
     Assert.AreEqual(Seq.length pathSet, expectedLength)
 
@@ -68,4 +69,33 @@ let checkShortestPathLength grammarFile graphFile tokenize ntName startVertice e
 type ``Library with simple grammar tests`` () = 
     [<Test>]
     member this.``pathset test`` () = 
-        "..."
+        checkSubgraphSize "KirillsGrammar1.yrd" "KirillsGraph1.txt" id 100000
+
+    [<Test>]
+    member this._01_SimpleSPPFTest() = 
+        let vertices = new ResizeArray<int>()
+        vertices.Add(0)
+        vertices.Add(1)
+        vertices.Add(2)
+        let edges = new ResizeArray<ParserEdge<string>>()
+        edges.Add(new ParserEdge<string>(0, 1, "A"))
+        edges.Add(new ParserEdge<string>(1, 0, "A"))
+        edges.Add(new ParserEdge<string>(1, 2, "B"))
+        edges.Add(new ParserEdge<string>(2, 1, "B"))
+        let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
+        graph.AddVerticesAndEdgeRange edges |> ignore
+        checkLength "MyBrackets.yrd" graph id 100 "s" 100
+        
+
+    [<Test>]
+    member this._02_SimpleEpsCycleSPPFTest() =
+        let vertices = [|0; 1; 2; 3; 4; 5|]
+        let edges = new ResizeArray<ParserEdge<string>>()
+        edges.Add(new ParserEdge<string>(0, 1, "A"))
+        edges.Add(new ParserEdge<string>(1, 2, "A"))
+        edges.Add(new ParserEdge<string>(2, 3, "A"))
+        edges.Add(new ParserEdge<string>(3, 4, "C"))
+        edges.Add(new ParserEdge<string>(4, 5, "C"))
+        let graph = new QuickGraph.AdjacencyGraph<int, ParserEdge<string>>()
+        graph.AddVerticesAndEdgeRange edges |> ignore
+        checkLength "EpsCycle.yrd" graph id 5 "a" 5
